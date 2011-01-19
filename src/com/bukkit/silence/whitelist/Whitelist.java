@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.Timer;
 import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -53,6 +54,8 @@ public class Whitelist extends JavaPlugin
 
   //Attributes
   private final WLPlayerListener m_PlayerListner = new WLPlayerListener(this);
+  private FileWatcher m_Watcher;
+  private Timer m_Timer = new Timer(true);
   private File m_Folder;
   private ArrayList<String> m_WhitelistAdmins;
   private ArrayList<String> m_WhitelistAllow;
@@ -100,6 +103,10 @@ public class Whitelist extends JavaPlugin
         System.out.println("failed.");
       }
     }
+    //Start file watcher
+    m_Watcher = new FileWatcher(fWhitelist);
+    m_Timer.schedule(m_Watcher, 0, 1000);
+    
     File fConfig = new File(m_Folder.getAbsolutePath() + File.separator + FILE_CONFIG);
     if (!fConfig.exists())
     {
@@ -127,6 +134,7 @@ public class Whitelist extends JavaPlugin
 
   public void onDisable()
   {
+    m_Timer.cancel();
     System.out.println("Goodbye world!");
   }
 
@@ -282,5 +290,18 @@ public class Whitelist extends JavaPlugin
   public boolean isListCommandDisabled()
   {
     return m_IsListCommandDisabled;
+  }
+
+  public boolean needReloadWhitelist()
+  {
+    if ( m_Watcher != null )
+      return m_Watcher.wasFileModified();
+    return false;
+  }
+
+  public void resetNeedReloadWhitelist()
+  {
+    if ( m_Watcher != null )
+      m_Watcher.resetFileModifiedState();
   }
 }
