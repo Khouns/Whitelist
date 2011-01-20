@@ -35,7 +35,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Timer;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -81,7 +84,7 @@ public class Whitelist extends JavaPlugin
     PluginManager pm = getServer().getPluginManager();
 
     pm.registerEvent(Event.Type.PLAYER_LOGIN, m_PlayerListner, Priority.Low, this);
-    pm.registerEvent(Event.Type.PLAYER_COMMAND, m_PlayerListner, Priority.Monitor, this);
+    //pm.registerEvent(Event.Type.PLAYER_COMMAND, m_PlayerListner, Priority.Monitor, this);
 
     //Create folders and files
     if (!m_Folder.exists())
@@ -136,6 +139,84 @@ public class Whitelist extends JavaPlugin
   {
     m_Timer.cancel();
     System.out.println("Goodbye world!");
+  }
+
+  @Override
+  public boolean onCommand(Player player, Command cmd, String commandLabel, String[] args)
+  {
+    if ( !isAdmin(player.getName()) )
+      return true; //only whitelist admins are allowed to use /whitelist
+
+    if ( args.length < 1 )
+    {
+      return false;
+    }
+    if ( args[0].compareToIgnoreCase("help") == 0 )
+    {
+      player.sendMessage(ChatColor.YELLOW + "Commands:");
+      player.sendMessage(ChatColor.YELLOW + "/whitelist reload  (reloads the whitelist and settings)");
+      player.sendMessage(ChatColor.YELLOW + "/whitelist add [player]  (adds a player to the whitelist)");
+      player.sendMessage(ChatColor.YELLOW + "/whitelist remove [player]  (removes a player from the whitelist)");
+      player.sendMessage(ChatColor.YELLOW + "/whitelist on|off  (actives/deactivates whitelist)");
+      player.sendMessage(ChatColor.YELLOW + "/whitelist list  (list whitelist entries)");
+      return true;
+    }
+    if ( args[0].compareToIgnoreCase("reload") == 0 )
+    {
+      if ( reloadSettings() )
+        player.sendMessage(ChatColor.GREEN + "Settings and whitelist reloaded");
+      else
+        player.sendMessage(ChatColor.RED + "Could not reload whitelist...");
+      return true;
+    }
+    if(args[0].compareToIgnoreCase("add") == 0)
+    {
+      if ( args.length < 2 )
+      {
+        player.sendMessage(ChatColor.RED + "Parameter missing: Player name");
+      }
+      else
+      {
+        if ( addPlayerToWhitelist( args[1] ) )
+          player.sendMessage(ChatColor.GREEN + "Player \"" + args[1] + "\" added");
+        else
+          player.sendMessage(ChatColor.RED + "Could not add player \"" + args[1] + "\"");
+      }
+      return true;
+    }
+    if(args[0].compareToIgnoreCase("remove") == 0)
+    {
+      if ( args.length < 2 )
+      {
+        player.sendMessage(ChatColor.RED + "Parameter missing: Player name");
+      }
+      else
+      {
+        if ( removePlayerFromWhitelist( args[1] ))
+          player.sendMessage(ChatColor.GREEN + "Player \"" + args[1] + "\" removed");
+        else
+          player.sendMessage(ChatColor.RED + "Could not remove player \"" + args[1] + "\"");
+      }
+      return true;
+    }
+    if (args[0].compareToIgnoreCase("on") ==0)
+    {
+      setWhitelistActive(true);
+      player.sendMessage(ChatColor.GREEN + "Whitelist activated!");
+      return true;
+    }
+    if (args[0].compareToIgnoreCase("off") ==0)
+    {
+      setWhitelistActive(false);
+      player.sendMessage(ChatColor.RED + "Whitelist deactivated!");
+      return true;
+    }
+    if (args[0].compareToIgnoreCase("list") == 0 && !isListCommandDisabled())
+    {
+      player.sendMessage(ChatColor.YELLOW + "Players on whitelist: " + ChatColor.GRAY + getFormatedAllowList());
+      return true;
+    }
+    return false;
   }
 
   public boolean loadWhitelistSettings()

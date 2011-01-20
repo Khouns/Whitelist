@@ -21,7 +21,7 @@
 
 package com.bukkit.silence.whitelist;
 
-import org.bukkit.event.player.PlayerChatEvent;
+//import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
@@ -61,7 +61,7 @@ public class WLPlayerListener extends PlayerListener
     }
   }
 
-  @Override
+  /*@Override
   public void onPlayerCommand(PlayerChatEvent event)
   {
     //commands:
@@ -136,5 +136,5 @@ public class WLPlayerListener extends PlayerListener
         }
       }
     }
-  }
+  }*/
 }
