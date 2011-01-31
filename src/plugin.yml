@@ -1,6 +1,6 @@
 name: Whitelist
 main: com.bukkit.silence.whitelist.Whitelist
-version: 1.5
+version: 1.6
 commands:
   whitelist:
     description: All whitelist commands
