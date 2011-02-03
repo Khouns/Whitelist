@@ -39,6 +39,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -147,6 +148,22 @@ public class Whitelist extends JavaPlugin
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
   {
+    Player player = null;
+    try
+    {
+      player = (Player)sender;
+    }
+    catch (Exception e)
+    {
+    }
+
+    if ( player != null )
+    {
+      if ( !isAdmin(player.getName()) )
+        return true;
+    }
+      
+
     if ( !sender.isOp() )
       return true; //only whitelist admins are allowed to use /whitelist
 
