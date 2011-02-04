@@ -162,11 +162,7 @@ public class Whitelist extends JavaPlugin
       if ( !isAdmin(player.getName()) )
         return true;
     }
-      
-
-    if ( !sender.isOp() )
-      return true; //only whitelist admins are allowed to use /whitelist
-
+    
     if ( args.length < 1 )
     {
       return false;
