@@ -19,7 +19,7 @@
  * MA 02111-1307, USA.
  */
 
-package com.bukkit.silence.whitelist;
+package net.immortal_forces.silence.plugin.whitelist;
 
 //import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;

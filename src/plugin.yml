@@ -1,6 +1,6 @@
 name: Whitelist
-main: com.bukkit.silence.whitelist.Whitelist
-version: 1.8
+main: net.immortal_forces.silence.plugin.whitelist.Whitelist
+version: 1.9
 commands:
   whitelist:
     description: All whitelist commands

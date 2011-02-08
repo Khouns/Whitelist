@@ -19,7 +19,7 @@
  * MA 02111-1307, USA.
  */
 
-package com.bukkit.silence.whitelist;
+package net.immortal_forces.silence.plugin.whitelist;
 
 import java.io.File;
 import java.util.TimerTask;
