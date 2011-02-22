@@ -1,6 +1,6 @@
 name: Whitelist
 main: net.immortal_forces.silence.plugin.whitelist.Whitelist
-version: 1.9
+version: 2.2
 commands:
   whitelist:
     description: All whitelist commands
