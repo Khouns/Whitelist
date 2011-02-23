@@ -33,6 +33,7 @@ public class SQLConnection
   final String m_strQuery;
   final String m_strQueryAdd;
   final String m_strQueryRemove;
+  final String m_strConnection;
   Connection m_Connection;
 
   public SQLConnection(String strDriver, String strConnection, String strQuery, String strQueryAdd, String strQueryRemove) throws Exception
@@ -40,6 +41,7 @@ public class SQLConnection
     m_strQuery = strQuery;
     m_strQueryAdd = strQueryAdd;
     m_strQueryRemove = strQueryRemove;
+    m_strConnection = strConnection;
     m_Connection = null;
     
     try
@@ -61,10 +63,13 @@ public class SQLConnection
     }
   }
 
-  public boolean isOnWhitelist(String playerName)
+  public boolean isOnWhitelist(String playerName, boolean bRetry)
   {
     try
     {
+      if ( m_Connection == null )
+        m_Connection = DriverManager.getConnection(m_strConnection);
+
       Statement stmt = m_Connection.createStatement();
       ResultSet rst = stmt.executeQuery(m_strQuery.replace("<%USERNAME%>", playerName));
       if ( rst.first() )
@@ -74,9 +79,17 @@ public class SQLConnection
     }
     catch (SQLException ex)
     {
-      System.out.println("Whitelist: SQLException: " + ex.getMessage());
-      System.out.println("Whitelist: SQLState: " + ex.getSQLState());
-      System.out.println("Whitelist: VendorError: " + ex.getErrorCode());
+      m_Connection = null;
+      if ( bRetry )
+      {
+        return isOnWhitelist(playerName, false);
+      }
+      else
+      {
+        System.out.println("Whitelist: SQLException: " + ex.getMessage());
+        System.out.println("Whitelist: SQLState: " + ex.getSQLState());
+        System.out.println("Whitelist: VendorError: " + ex.getErrorCode());
+      }
     }
     catch (Exception ex)
     {
@@ -85,21 +98,31 @@ public class SQLConnection
     return false;
   }
 
-  public boolean addPlayerToWhitelist(String playerName)
+  public boolean addPlayerToWhitelist(String playerName, boolean bRetry)
   {
     if ( m_strQueryAdd != null && !m_strQueryAdd.isEmpty() )
     {
       try
       {
+        if ( m_Connection == null )
+          m_Connection = DriverManager.getConnection(m_strConnection);
         Statement stmt = m_Connection.createStatement();
         stmt.execute(m_strQueryAdd.replace("<%USERNAME%>", playerName));
         return true;
       }
       catch (SQLException ex)
       {
-        System.out.println("Whitelist: SQLException: " + ex.getMessage());
-        System.out.println("Whitelist: SQLState: " + ex.getSQLState());
-        System.out.println("Whitelist: VendorError: " + ex.getErrorCode());
+        m_Connection = null;
+        if ( bRetry )
+        {
+          return addPlayerToWhitelist(playerName, false);
+        }
+        else
+        {
+          System.out.println("Whitelist: SQLException: " + ex.getMessage());
+          System.out.println("Whitelist: SQLState: " + ex.getSQLState());
+          System.out.println("Whitelist: VendorError: " + ex.getErrorCode());
+        }
       }
       catch (Exception ex)
       {
@@ -109,21 +132,31 @@ public class SQLConnection
     return false;
   }
 
-  public boolean removePlayerFromWhitelist(String playerName)
+  public boolean removePlayerFromWhitelist(String playerName, boolean bRetry)
   {
     if ( m_strQueryRemove != null && !m_strQueryRemove.isEmpty() )
     {
       try
       {
+        if ( m_Connection == null )
+          m_Connection = DriverManager.getConnection(m_strConnection);
         Statement stmt = m_Connection.createStatement();
         stmt.execute(m_strQueryRemove.replace("<%USERNAME%>", playerName));
         return true;
       }
       catch (SQLException ex)
       {
-        System.out.println("Whitelist: SQLException: " + ex.getMessage());
-        System.out.println("Whitelist: SQLState: " + ex.getSQLState());
-        System.out.println("Whitelist: VendorError: " + ex.getErrorCode());
+        m_Connection = null;
+        if ( bRetry )
+        {
+          return removePlayerFromWhitelist(playerName, false);
+        }
+        else
+        {
+          System.out.println("Whitelist: SQLException: " + ex.getMessage());
+          System.out.println("Whitelist: SQLState: " + ex.getSQLState());
+          System.out.println("Whitelist: VendorError: " + ex.getErrorCode());
+        }
       }
       catch (Exception ex)
       {

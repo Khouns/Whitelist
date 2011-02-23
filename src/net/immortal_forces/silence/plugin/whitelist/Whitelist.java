@@ -388,7 +388,7 @@ public class Whitelist extends JavaPlugin
   {
     if ( m_bSettingsSqlEnabled && m_SqlConnection != null )
     {
-      return m_SqlConnection.isOnWhitelist(playerName);
+      return m_SqlConnection.isOnWhitelist(playerName, true);
     }
     else
     {
@@ -409,7 +409,7 @@ public class Whitelist extends JavaPlugin
     { //SQL mode
       if ( !isOnWhitelist(playerName) )
       {
-        return m_SqlConnection.addPlayerToWhitelist(playerName);
+        return m_SqlConnection.addPlayerToWhitelist(playerName, true);
       }
     }
     else
@@ -429,7 +429,7 @@ public class Whitelist extends JavaPlugin
     { //SQL mode
       if ( isOnWhitelist(playerName) )
       {
-        return m_SqlConnection.removePlayerFromWhitelist(playerName);
+        return m_SqlConnection.removePlayerFromWhitelist(playerName, true);
       }
     }
     else
