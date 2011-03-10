@@ -52,6 +52,7 @@ public class Whitelist extends JavaPlugin
   private final String PROP_WHITELIST_ADMINS = "whitelist-admins";
   private final String PROP_DISABLE_LIST = "disable-list-command";
   private final String PROP_USE_SQL = "sql-enable";
+  private final String PROP_SQL_DRIVER_JAR = "sql-driver-jar";
   private final String PROP_SQL_DRIVER = "sql-driver";
   private final String PROP_SQL_CONNECTION = "sql-driver-connection";
   private final String PROP_SQL_QUERY = "sql-query";
@@ -76,6 +77,7 @@ public class Whitelist extends JavaPlugin
   
   //SQL settings
   private boolean m_bSettingsSqlEnabled;
+  private String m_strSettingsSqlDriverJar;
   private String m_strSettingsSqlDriver;
   private String m_strSettingsSqlConnection;
   private String m_strSettingsSqlQuery;
@@ -96,6 +98,7 @@ public class Whitelist extends JavaPlugin
     m_bWhitelistActive = true;
     m_bSettingsListCommandDisabled = false;
     m_bSettingsSqlEnabled = false;
+    m_strSettingsSqlDriverJar = "";
     m_strSettingsSqlDriver = "";
     m_strSettingsSqlConnection = "";
     m_strSettingsSqlQuery = "";
@@ -147,6 +150,7 @@ public class Whitelist extends JavaPlugin
         propConfig.setProperty(PROP_WHITELIST_ADMINS, "Name1,Name2,Name3");
         propConfig.setProperty(PROP_DISABLE_LIST, "false");
         //propConfig.setProperty(PROP_USE_SQL, "false");
+        //propConfig.setProperty(PROP_SQL_DRIVER_JAR, "./connectors/mysql-connector.jar"
         //propConfig.setProperty(PROP_SQL_DRIVER, "com.mysql.jdbc.Driver");
         //propConfig.setProperty(PROP_SQL_CONNECTION, "jdbc:mysql://localhost/dbname?user=bukkit&password=BukkitIsGreat!");
         //propConfig.setProperty(PROP_SQL_QUERY, "SELECT name FROM user WHERE user='<%USERNAME%>'");
@@ -338,8 +342,9 @@ public class Whitelist extends JavaPlugin
       {
         m_strSettingsSqlQueryRemove = "";
       }
+      m_strSettingsSqlDriverJar = propConfig.getProperty(PROP_SQL_DRIVER_JAR);
       if ( m_bSettingsSqlEnabled )
-        m_SqlConnection = new SQLConnection(m_strSettingsSqlDriver, m_strSettingsSqlConnection, m_strSettingsSqlQuery, m_strSettingsSqlQueryAdd, m_strSettingsSqlQueryRemove);
+        m_SqlConnection = new SQLConnection(m_strSettingsSqlDriver, m_strSettingsSqlConnection, m_strSettingsSqlQuery, m_strSettingsSqlQueryAdd, m_strSettingsSqlQueryRemove, m_strSettingsSqlDriverJar);
       else
         m_SqlConnection = null;
       

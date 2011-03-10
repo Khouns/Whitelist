@@ -21,7 +21,11 @@
 
 package net.immortal_forces.silence.plugin.whitelist;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,8 +39,9 @@ public class SQLConnection
   final String m_strQueryRemove;
   final String m_strConnection;
   Connection m_Connection;
+  Driver m_ProxyDriver;
 
-  public SQLConnection(String strDriver, String strConnection, String strQuery, String strQueryAdd, String strQueryRemove) throws Exception
+  public SQLConnection(String strDriver, String strConnection, String strQuery, String strQueryAdd, String strQueryRemove, String strDriverPath) throws Exception
   {
     m_strQuery = strQuery;
     m_strQueryAdd = strQueryAdd;
@@ -46,7 +51,17 @@ public class SQLConnection
     
     try
     {
-      Class.forName(strDriver).newInstance();
+      if ( strDriverPath == null || !(new File(strDriverPath).exists()) )
+      {
+        Class.forName(strDriver).newInstance();
+      }
+      else
+      {
+        URL url = new URL("jar:file:" + strDriverPath + "!/");
+        URLClassLoader ucl = new URLClassLoader(new URL[] { url });
+        m_ProxyDriver = new DriverProxy((Driver)Class.forName(strDriver, true, ucl).newInstance());
+        DriverManager.registerDriver(m_ProxyDriver);
+      }
       m_Connection = DriverManager.getConnection(strConnection);
     }
     catch (SQLException ex)
