@@ -118,6 +118,12 @@ public class SQLConnection
       if ( m_Connection == null )
         m_Connection = DriverManager.getConnection(m_strConnection);
 
+      //Valid characters in a players' name: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ (according to minecraft.net)
+      if ( !playerName.matches("[a-zA-Z0-9_]*") )
+      {
+        System.out.println("Whitelist: Illegal characters in player name, disallow!" );
+        return false;
+      }
       Statement stmt = m_Connection.createStatement();
       ResultSet rst = stmt.executeQuery(m_strQuery.replace("<%USERNAME%>", playerName));
       if ( rst.first() )
