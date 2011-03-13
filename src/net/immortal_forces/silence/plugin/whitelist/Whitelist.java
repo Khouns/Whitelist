@@ -344,9 +344,15 @@ public class Whitelist extends JavaPlugin
       }
       m_strSettingsSqlDriverJar = propConfig.getProperty(PROP_SQL_DRIVER_JAR);
       if ( m_bSettingsSqlEnabled )
+      {
         m_SqlConnection = new SQLConnection(m_strSettingsSqlDriver, m_strSettingsSqlConnection, m_strSettingsSqlQuery, m_strSettingsSqlQueryAdd, m_strSettingsSqlQueryRemove, m_strSettingsSqlDriverJar);
+      }
       else
+      {
+        if ( m_SqlConnection != null )
+          m_SqlConnection.Cleanup();
         m_SqlConnection = null;
+      }
       
       System.out.println("done.");
     }

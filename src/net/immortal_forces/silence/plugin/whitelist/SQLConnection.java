@@ -30,6 +30,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Enumeration;
 
 public class SQLConnection
 {
@@ -57,12 +58,28 @@ public class SQLConnection
       }
       else
       {
-        URL url = new URL("jar:file:" + strDriverPath + "!/");
-        URLClassLoader ucl = new URLClassLoader(new URL[] { url });
-        m_ProxyDriver = new DriverProxy((Driver)Class.forName(strDriver, true, ucl).newInstance());
-        DriverManager.registerDriver(m_ProxyDriver);
+        boolean bUseLoader = true;
+        Enumeration e = DriverManager.getDrivers();
+        while (e.hasMoreElements())
+        {
+          Driver driver = (Driver) e.nextElement();
+          if ( driver.getClass().getName().compareToIgnoreCase(strDriver) == 0 )
+            bUseLoader = false;
+        }
+        if ( bUseLoader )
+        {
+          URL url = new URL("jar:file:" + strDriverPath + "!/");
+          URLClassLoader ucl = new URLClassLoader(new URL[] { url });
+          m_ProxyDriver = new DriverProxy((Driver)Class.forName(strDriver, true, ucl).newInstance());
+          DriverManager.registerDriver(m_ProxyDriver);
+        }
+        else
+        {
+          Class.forName(strDriver).newInstance();
+        }
       }
       m_Connection = DriverManager.getConnection(strConnection);
+
     }
     catch (SQLException ex)
     {
@@ -75,6 +92,22 @@ public class SQLConnection
     {
       System.out.println("Whitelist: Exception: " + ex.toString() + " - missing connector?" );
       throw ex;
+    }
+  }
+  
+  public void Cleanup()
+  {
+    if ( m_ProxyDriver != null )
+    {
+      try
+      {
+        DriverManager.deregisterDriver(m_ProxyDriver);
+        m_ProxyDriver = null;
+      }
+      catch ( Exception ex )
+      {
+        m_ProxyDriver = null;
+      }
     }
   }
 
